@@ -12,3 +12,6 @@
 
 # Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
 .glide/
+/rportal/rportal
+/haproxy/haproxy
+/haproxy/conf/custom.ini

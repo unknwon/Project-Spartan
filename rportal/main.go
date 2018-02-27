@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	port = flag.Int("port", 8001, "Listening port number for reseller portal")
+	port = flag.Int("port", 8002, "Listening port number for reseller portal")
 	name = flag.String("name", "undefined", "Code name for reseller portal instance")
 )
 
