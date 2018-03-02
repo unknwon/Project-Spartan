@@ -13,13 +13,14 @@ import (
 	"time"
 
 	log "gopkg.in/clog.v1"
+
+	"github.com/Unknwon/Project-Spartan/haproxy/pkg/registry"
 )
 
 // Proxy is the core part of HA proxy, it maintains the list of server end points
 // and has the right to pick active server.
 type Proxy struct {
-	// List of available server end points
-	endPoints []string
+	registry *registry.Registry
 	// Time interval of two health check rounds
 	healthCheckInterval time.Duration
 	// Timeout duration of a health check request
@@ -30,7 +31,7 @@ type Proxy struct {
 	// RW mutex for active server reverse proxy object
 	proxyLocker sync.RWMutex
 	// Active server end point
-	activeEndPoint string
+	activeServer *registry.Server
 	// Reverse proxy object corresponding to the active server end point
 	proxy *httputil.ReverseProxy
 }
@@ -56,19 +57,22 @@ func NewProxy(endPoints []string, healthCheckInterval, healthCheckTimeout time.D
 
 	once.Do(func() {
 		proxyInstance = &Proxy{
-			endPoints:           endPoints,
+			registry:            registry.NewRegistry(endPoints),
 			healthCheckInterval: healthCheckInterval,
 			healthCheckTimeout:  healthCheckTimeout,
 			healthCheckClient: &http.Client{
 				Timeout: healthCheckTimeout,
 			},
-			activeEndPoint: endPoints[0],
+		}
+		proxyInstance.activeServer = &registry.Server{
+			Name:    proxyInstance.registry.Servers[0].Name,
+			Address: proxyInstance.registry.Servers[0].Address,
 		}
 
 		proxyInstance.HealthCheck()
 		proxyInstance.proxy = httputil.NewSingleHostReverseProxy(&url.URL{
 			Scheme: "http",
-			Host:   proxyInstance.activeEndPoint,
+			Host:   proxyInstance.activeServer.Address,
 		})
 	})
 	return proxyInstance
@@ -76,20 +80,20 @@ func NewProxy(endPoints []string, healthCheckInterval, healthCheckTimeout time.D
 
 var healthCheckCount int64 = 1
 
-func (p *Proxy) sendHealthCheckRequest(endPoint string) bool {
-	resp, err := p.healthCheckClient.Get("http://" + endPoint + "/healthcheck")
+func (p *Proxy) sendHealthCheckRequest(server *registry.Server) bool {
+	resp, err := p.healthCheckClient.Get("http://" + server.Address + "/healthcheck")
 	if err != nil {
 		if _, ok := err.(net.Error); ok {
-			log.Warn("[HC] Server '%s' is down", endPoint)
+			log.Warn("[HC] Server '%s' is down", server)
 		} else {
-			log.Error(2, "Fail to perform health check for '%s': %v", endPoint, err)
+			log.Error(2, "Fail to perform health check for '%s': %v", server, err)
 		}
 		return false
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		log.Error(2, "Fail to perform health check for '%s': status code is %d not 200", endPoint, resp.StatusCode)
+		log.Error(2, "Fail to perform health check for '%s': status code is %d not 200", server, resp.StatusCode)
 		return false
 	}
 	return true
@@ -99,22 +103,23 @@ func (p *Proxy) sendHealthCheckRequest(endPoint string) bool {
 func (p *Proxy) HealthCheck() {
 	log.Trace("[%d] Health check started...", healthCheckCount)
 
-	for _, endPoint := range p.endPoints {
-		if p.sendHealthCheckRequest(endPoint) {
+	for _, server := range p.registry.Servers {
+		if p.sendHealthCheckRequest(server) {
 			// No need to recreate same reverse proxy object if active end point is already it
-			if endPoint == p.activeEndPoint {
-				log.Trace("[HC] Active server '%s' still healthy", endPoint)
+			if server.Name == p.activeServer.Name {
+				log.Trace("[HC] Active server '%s' still healthy", server)
 				break
 			}
 
 			p.proxyLocker.Lock()
-			p.activeEndPoint = endPoint
+			p.activeServer.Name = server.Name
+			p.activeServer.Address = server.Address
 			proxyInstance.proxy = httputil.NewSingleHostReverseProxy(&url.URL{
 				Scheme: "http",
-				Host:   proxyInstance.activeEndPoint,
+				Host:   proxyInstance.activeServer.Address,
 			})
 			p.proxyLocker.Unlock()
-			log.Info("[HC] Active server changed to: %s", endPoint)
+			log.Info("[HC] Active server changed to: %s", server)
 			break
 		}
 	}
