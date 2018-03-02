@@ -25,11 +25,25 @@ func init() {
 }
 
 func main() {
-	m := macaron.Classic()
-	m.Use(macaron.Renderer())
+	m := macaron.New()
+	m.Use(macaron.Logger())
+	m.Use(macaron.Recovery())
+	m.Use(macaron.Static("ui/dist"))
+	m.Use(macaron.Renderer(macaron.RenderOptions{
+		Directory: "ui/dist",
+	}))
+	m.Use(func(c *macaron.Context) {
+		c.Data["CodeName"] = *name
+		c.Resp.Header().Add("X-Spartan-Server", *name)
+	})
 
 	m.Get("/", Home)
 	m.Get("/healthcheck", HealthCheck)
+
+	m.Group("/api", func() {
+		m.Combo("/items").Get(ListItems).Post(AddItem)
+		m.Delete("/items/:id", DeleteItem)
+	})
 
 	log.Info("Instance: %s, running on port %d", *name, *port)
 	if err := http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", *port), m); err != nil {
