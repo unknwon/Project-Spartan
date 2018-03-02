@@ -10,4 +10,4 @@ To build Docker image for rportal:
 
 To run Docker container from rportal image:
 
-    docker run -d -e SPARTAN-RPORTAL-NAME='rportal-docker-1' -p 9002:8002 --name rportal-docker-1 rportal:latest
+    docker run -d -e SPARTAN-RPORTAL-NAME='rportal-docker-1' -e SPARTAN-MYSQL-HOST='docker.for.mac.host.internal' -p 9002:8002 --name rportal-docker-1 rportal:latest

@@ -79,7 +79,7 @@ export default {
 
     deleteItem: function (item) {
       this.$http.delete('/api/items/' + item.id).then(function (response) {
-        this.items.splice(item, 1)
+        location.reload()
       }, function () {
         alert('Something went wrong on the server!')
       })
