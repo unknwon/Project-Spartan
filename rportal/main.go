@@ -8,6 +8,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
 
 	log "gopkg.in/clog.v1"
 	"gopkg.in/macaron.v1"
@@ -15,7 +16,7 @@ import (
 
 var (
 	port = flag.Int("port", 8002, "Listening port number for reseller portal")
-	name = flag.String("name", "undefined", "Code name for reseller portal instance")
+	name = flag.String("name", os.Getenv("SPARTAN-RPORTAL-NAME"), "Code name for reseller portal instance")
 )
 
 func init() {

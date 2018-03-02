@@ -1,0 +1,13 @@
+To start rportal instance locally:
+
+    make name=rportal-local-1 port=8002 [run]
+
+To build Docker image for rportal:
+
+    # Execute if host is not linux-amd64
+    env GOOS=linux GOARCH=amd64 go build
+    docker build -t "rportal" .
+
+To run Docker container from rportal image:
+
+    docker run -d -e SPARTAN-RPORTAL-NAME='rportal-docker-1' -p 8002:8002 --name rportal-docker-1 rportal:latest
