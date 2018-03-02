@@ -5,6 +5,7 @@
 package proxy
 
 import (
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -78,7 +79,11 @@ var healthCheckCount int64 = 1
 func (p *Proxy) sendHealthCheckRequest(endPoint string) bool {
 	resp, err := p.healthCheckClient.Get("http://" + endPoint + "/healthcheck")
 	if err != nil {
-		log.Error(2, "Fail to perform health check for '%s': %v", endPoint, err)
+		if _, ok := err.(net.Error); ok {
+			log.Warn("[HC] Server '%s' is down", endPoint)
+		} else {
+			log.Error(2, "Fail to perform health check for '%s': %v", endPoint, err)
+		}
 		return false
 	}
 	defer resp.Body.Close()
@@ -109,7 +114,7 @@ func (p *Proxy) HealthCheck() {
 				Host:   proxyInstance.activeEndPoint,
 			})
 			p.proxyLocker.Unlock()
-			log.Trace("[HC] Active server changed to: %s", endPoint)
+			log.Info("[HC] Active server changed to: %s", endPoint)
 			break
 		}
 	}
