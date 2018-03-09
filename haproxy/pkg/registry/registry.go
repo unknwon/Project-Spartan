@@ -8,10 +8,19 @@ import (
 	"strings"
 )
 
+type Status string
+
+const (
+	STATUS_UNKNOWN Status = "unknown"
+	STATUS_RUNNING Status = "running"
+	STATUS_DOWN    Status = "down"
+)
+
 // Instance contains information of an instance's code name and address.
 type Instance struct {
-	Name    string
-	Address string
+	Name    string `json:"name"`
+	Address string `json:"address"`
+	Status  Status `json:"status"`
 }
 
 func (s *Instance) String() string {
@@ -35,6 +44,7 @@ func NewRegistry(inputs []string) *Registry {
 		r.Servers[i] = &Instance{
 			Name:    fields[0],
 			Address: fields[1],
+			Status:  STATUS_UNKNOWN,
 		}
 	}
 	return r
