@@ -31,7 +31,7 @@ type Proxy struct {
 	// RW mutex for active server reverse proxy object
 	proxyLocker sync.RWMutex
 	// Active server end point
-	activeServer *registry.Server
+	activeServer *registry.Instance
 	// Reverse proxy object corresponding to the active server end point
 	proxy *httputil.ReverseProxy
 }
@@ -64,7 +64,7 @@ func NewProxy(endPoints []string, healthCheckInterval, healthCheckTimeout time.D
 				Timeout: healthCheckTimeout,
 			},
 		}
-		proxyInstance.activeServer = &registry.Server{
+		proxyInstance.activeServer = &registry.Instance{
 			Name:    proxyInstance.registry.Servers[0].Name,
 			Address: proxyInstance.registry.Servers[0].Address,
 		}
@@ -80,11 +80,11 @@ func NewProxy(endPoints []string, healthCheckInterval, healthCheckTimeout time.D
 
 var healthCheckCount int64 = 1
 
-func (p *Proxy) sendHealthCheckRequest(server *registry.Server) bool {
+func (p *Proxy) sendHealthCheckRequest(server *registry.Instance) bool {
 	resp, err := p.healthCheckClient.Get("http://" + server.Address + "/healthcheck")
 	if err != nil {
 		if _, ok := err.(net.Error); ok {
-			log.Warn("[HC] Server '%s' is down", server)
+			log.Warn("[HC] Instance '%s' is down", server)
 		} else {
 			log.Error(2, "Fail to perform health check for '%s': %v", server, err)
 		}

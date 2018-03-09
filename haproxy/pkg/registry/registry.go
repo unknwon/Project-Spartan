@@ -8,19 +8,19 @@ import (
 	"strings"
 )
 
-// Server contains information of a server's code name and address.
-type Server struct {
+// Instance contains information of an instance's code name and address.
+type Instance struct {
 	Name    string
 	Address string
 }
 
-func (s *Server) String() string {
+func (s *Instance) String() string {
 	return s.Name + "/" + s.Address
 }
 
 // Registry maintains a list of servers.
 type Registry struct {
-	Servers []*Server
+	Servers []*Instance
 }
 
 // NewRegistry parses raw input of server metadata and returns a registry maintains the list.
@@ -28,11 +28,11 @@ type Registry struct {
 //		["rportal-local-1/localhost:8002", "rportal-docker-1/localhost:9002"]
 func NewRegistry(inputs []string) *Registry {
 	r := &Registry{
-		Servers: make([]*Server, len(inputs)),
+		Servers: make([]*Instance, len(inputs)),
 	}
 	for i, input := range inputs {
 		fields := strings.Split(input, "/")
-		r.Servers[i] = &Server{
+		r.Servers[i] = &Instance{
 			Name:    fields[0],
 			Address: fields[1],
 		}
