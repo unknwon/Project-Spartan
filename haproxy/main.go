@@ -5,6 +5,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"net/http"
@@ -39,5 +40,17 @@ type proxyHandler struct {
 
 func (h *proxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Spartan-Proxy", *name)
+
+	// Response to health check
+	if r.RequestURI == "/healthcheck" {
+		w.Header().Add("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(map[string]interface{}{
+			"Status": "OK",
+		}); err != nil {
+			log.Error(4, "Fail to response to health check: %v", err)
+		}
+		return
+	}
+
 	h.Proxy.ServeHTTP(w, r)
 }
