@@ -25,6 +25,8 @@ func main() {
 
 	m.Group("/api", func() {
 		m.Get("/dashboard", Dashboard)
+
+		m.Combo("/servers").Post(StartServer).Delete(ShutdownServer)
 	})
 
 	log.Info("Instance: %s, running on port %d", "cpanel", 7777)

@@ -26,7 +26,7 @@
           <th>Name</th>
           <th>Address</th>
           <th>Status</th>
-          <!-- <th>Action</th> -->
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
@@ -34,6 +34,10 @@
           <td>{{ item.name }}</td>
           <td>{{ item.address }}</td>
           <td>{{ item.status }}</td>
+          <td>
+            <a href="#" v-if="item.status == 'running'" @click="shutdownServer(item.name)">Shutdown</a>
+            <a href="#" v-else @click="startServer(item.name)">Start</a>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -84,6 +88,22 @@ export default {
         this.haproxies = response.data ? response.data.haproxies : []
         this.servers = response.data ? response.data.servers : []
         this.databases = response.data ? response.data.databases : []
+      })
+    },
+
+    startServer: function (name) {
+      this.$http.post('/api/servers?name=' + name).then(function (response) {
+        alert('Operation succeed, please wait page to reload data!')
+      }, response => {
+        alert(response.data)
+      })
+    },
+
+    shutdownServer: function (name) {
+      this.$http.delete('/api/servers?name=' + name).then(function (response) {
+        alert('Operation succeed, please wait page to reload data!')
+      }, response => {
+        alert(response.data)
       })
     }
   }

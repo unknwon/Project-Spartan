@@ -80,6 +80,7 @@ func HealthCheck() {
 		}
 	}
 
+	// FIXME: Need to reconnect if the database was down last time, otherwise Ping will always fail.
 	for _, in := range databaseRegistry.Instances {
 		if err := dbCoons[in.Name].DB().Ping(); err != nil {
 			log.Error(2, "Fail to perform health check for '%s': %v", in, err)

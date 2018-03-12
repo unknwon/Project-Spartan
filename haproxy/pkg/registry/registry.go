@@ -2,9 +2,11 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+// Note: This package is not thread-safe!
 package registry
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -48,4 +50,15 @@ func NewRegistry(inputs []string) *Registry {
 		}
 	}
 	return r
+}
+
+// InstanceByName returns an instance object by given name.
+// It returns an error if no instance found associated with the name.
+func (r *Registry) InstanceByName(name string) (*Instance, error) {
+	for i := range r.Instances {
+		if r.Instances[i].Name == name {
+			return r.Instances[i], nil
+		}
+	}
+	return nil, fmt.Errorf("instance '%s' not found", name)
 }
