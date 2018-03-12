@@ -65,8 +65,8 @@ func NewProxy(endPoints []string, healthCheckInterval, healthCheckTimeout time.D
 			},
 		}
 		proxyInstance.activeServer = &registry.Instance{
-			Name:    proxyInstance.registry.Servers[0].Name,
-			Address: proxyInstance.registry.Servers[0].Address,
+			Name:    proxyInstance.registry.Instances[0].Name,
+			Address: proxyInstance.registry.Instances[0].Address,
 		}
 
 		proxyInstance.HealthCheck()
@@ -103,23 +103,23 @@ func (p *Proxy) sendHealthCheckRequest(server *registry.Instance) bool {
 func (p *Proxy) HealthCheck() {
 	log.Trace("[%d] Health check started...", healthCheckCount)
 
-	for _, server := range p.registry.Servers {
-		if p.sendHealthCheckRequest(server) {
+	for _, in := range p.registry.Instances {
+		if p.sendHealthCheckRequest(in) {
 			// No need to recreate same reverse proxy object if active end point is already it
-			if server.Name == p.activeServer.Name {
-				log.Trace("[HC] Active server '%s' still healthy", server)
+			if in.Name == p.activeServer.Name {
+				log.Trace("[HC] Active server '%s' still healthy", in)
 				break
 			}
 
 			p.proxyLocker.Lock()
-			p.activeServer.Name = server.Name
-			p.activeServer.Address = server.Address
+			p.activeServer.Name = in.Name
+			p.activeServer.Address = in.Address
 			proxyInstance.proxy = httputil.NewSingleHostReverseProxy(&url.URL{
 				Scheme: "http",
 				Host:   proxyInstance.activeServer.Address,
 			})
 			p.proxyLocker.Unlock()
-			log.Info("[HC] Active server changed to: %s", server)
+			log.Info("[HC] Active server changed to: %s", in)
 			break
 		}
 	}

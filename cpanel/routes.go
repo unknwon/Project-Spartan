@@ -14,7 +14,7 @@ func Home(c *macaron.Context) {
 
 func Dashboard(c *macaron.Context) {
 	c.JSON(200, map[string]interface{}{
-		"haproxies": haproxyRegistry.Servers,
-		"servers":   serverRegistry.Servers,
+		"haproxies": haproxyRegistry.Instances,
+		"servers":   serverRegistry.Instances,
 	})
 }

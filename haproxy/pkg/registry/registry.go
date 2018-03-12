@@ -29,19 +29,19 @@ func (s *Instance) String() string {
 
 // Registry maintains a list of servers.
 type Registry struct {
-	Servers []*Instance
+	Instances []*Instance
 }
 
-// NewRegistry parses raw input of server metadata and returns a registry maintains the list.
+// NewRegistry parses raw input of instance metadata and returns a registry maintains the list.
 // The raw input format should be:
 //		["rportal-local-1/localhost:8002", "rportal-docker-1/localhost:9002"]
 func NewRegistry(inputs []string) *Registry {
 	r := &Registry{
-		Servers: make([]*Instance, len(inputs)),
+		Instances: make([]*Instance, len(inputs)),
 	}
 	for i, input := range inputs {
-		fields := strings.Split(input, "/")
-		r.Servers[i] = &Instance{
+		fields := strings.SplitN(input, "/", 2)
+		r.Instances[i] = &Instance{
 			Name:    fields[0],
 			Address: fields[1],
 			Status:  STATUS_UNKNOWN,
