@@ -4,7 +4,10 @@ The Spartan is a HA (High Availability) research-oriented project for IT 485.
 
 ## Requirements
 
-- Go 1.10 (built based on this version, other versions are not tested)
+_built based on such version, other versions are not tested_
+
+- Go 1.10 
+- Docker for Mac 17.12.0-ce
 
 ## Disclaimers
 

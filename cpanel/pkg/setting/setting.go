@@ -50,6 +50,11 @@ func init() {
 	}
 	log.Info("Server end points: %s", strings.Join(Server.EndPoints, ", "))
 
+	if err = Config.Section("database").MapTo(&Database); err != nil {
+		log.Fatal(2, "Fail to map Database settings: %v", err)
+	}
+	log.Info("Database end points: %s", strings.Join(Database.EndPoints, ", "))
+
 	if err = Config.Section("health_check").MapTo(&HealthCheck); err != nil {
 		log.Fatal(2, "Fail to map HealthCheck settings: %v", err)
 	}

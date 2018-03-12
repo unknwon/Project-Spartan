@@ -8,7 +8,6 @@
           <th>Name</th>
           <th>Address</th>
           <th>Status</th>
-          <!-- <th>Action</th> -->
         </tr>
       </thead>
       <tbody>
@@ -38,6 +37,24 @@
         </tr>
       </tbody>
     </table>
+
+    <h3>Database</h3>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Address</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in databases" :key="item.name">
+          <td>{{ item.name }}</td>
+          <td>{{ item.address }}</td>
+          <td>{{ item.status }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -48,7 +65,8 @@ export default {
   data: function () {
     return {
       haproxies: [],
-      servers: []
+      servers: [],
+      databases: []
     }
   },
 
@@ -65,6 +83,7 @@ export default {
       this.$http.get('/api/dashboard').then(function (response) {
         this.haproxies = response.data ? response.data.haproxies : []
         this.servers = response.data ? response.data.servers : []
+        this.databases = response.data ? response.data.databases : []
       })
     }
   }
