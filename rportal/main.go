@@ -40,6 +40,7 @@ func main() {
 
 	m.Get("/", Home)
 	m.Get("/healthcheck", HealthCheck)
+	m.Get("/metadata", MetaData)
 
 	m.Group("/api", func() {
 		m.Combo("/items").Get(ListItems).Post(AddItem)

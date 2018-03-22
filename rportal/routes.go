@@ -6,15 +6,43 @@ package main
 
 import (
 	"encoding/json"
+	"math/rand"
+	"time"
 
 	log "gopkg.in/clog.v1"
 	"gopkg.in/macaron.v1"
 )
 
+var (
+	responseDelay int // Between 0-500
+	cpuLoad       int // Between 0-100
+	memoryUsage   int // Between 0-100
+)
+
+// Randomize response time, CPU load, memory usage at start.
+func init() {
+	s1 := rand.NewSource(time.Now().UnixNano())
+	r1 := rand.New(s1)
+
+	responseDelay = r1.Intn(500)
+	cpuLoad = rand.Intn(100)
+	memoryUsage = r1.Intn(100)
+}
+
 func HealthCheck(c *macaron.Context) {
+	time.Sleep(time.Duration(responseDelay) * time.Millisecond)
+
 	c.JSON(200, map[string]interface{}{
-		"Status": "OK",
+		"Status":      "OK",
+		"CPULoad":     cpuLoad,
+		"MemoryUsage": memoryUsage,
 	})
+}
+
+func MetaData(c *macaron.Context) {
+	responseDelay = c.QueryInt("responseDelay")
+	cpuLoad = c.QueryInt("cpuLoad")
+	memoryUsage = c.QueryInt("memoryUsage")
 }
 
 func Home(c *macaron.Context) {
