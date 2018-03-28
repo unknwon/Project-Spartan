@@ -8,6 +8,7 @@ _Built based on such version, other versions are not tested_
 
 - Go 1.10 
 - Docker for Mac 17.12.0-ce
+- Vagrant 2.0.3
 
 ## Disclaimers
 

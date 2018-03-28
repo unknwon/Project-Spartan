@@ -14,9 +14,10 @@ import (
 
 func main() {
 	m := macaron.New()
-	m.Use(macaron.Logger())
 	m.Use(macaron.Recovery())
-	m.Use(macaron.Static("ui/dist"))
+	m.Use(macaron.Static("ui/dist", macaron.StaticOptions{
+		SkipLogging: true,
+	}))
 	m.Use(macaron.Renderer(macaron.RenderOptions{
 		Directory: "ui/dist",
 	}))

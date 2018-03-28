@@ -13,7 +13,7 @@
       <tbody>
         <tr v-for="item in haproxies" :key="item.name">
           <td>{{ item.name }}</td>
-          <td>{{ item.address }}</td>
+          <td><a target="_blank" :href="'http://' + item.address">{{ item.address }}</a></td>
           <td>{{ item.status }}</td>
         </tr>
       </tbody>
@@ -32,7 +32,7 @@
       <tbody>
         <tr v-for="item in servers" :key="item.name">
           <td>{{ item.name }}</td>
-          <td>{{ item.address }}</td>
+          <td><a target="_blank" :href="'http://' + item.address">{{ item.address }}</a></td>
           <td>{{ item.status }}</td>
           <td>
             <a href="#" v-if="item.status == 'running'" @click="shutdownServer(item.name)">Shutdown</a>
