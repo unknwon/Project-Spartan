@@ -8,6 +8,7 @@ package registry
 import (
 	"fmt"
 	"strings"
+	"sync"
 )
 
 type Status string
@@ -23,6 +24,7 @@ type Instance struct {
 	Name    string `json:"name"`
 	Address string `json:"address"`
 	Status  Status `json:"status"`
+	Score   int    `json:"score"`
 }
 
 func (s *Instance) String() string {
@@ -31,6 +33,7 @@ func (s *Instance) String() string {
 
 // Registry maintains a list of servers.
 type Registry struct {
+	locker    sync.RWMutex
 	Instances []*Instance
 }
 
@@ -55,6 +58,9 @@ func NewRegistry(inputs []string) *Registry {
 // InstanceByName returns an instance object by given name.
 // It returns an error if no instance found associated with the name.
 func (r *Registry) InstanceByName(name string) (*Instance, error) {
+	r.locker.RLock()
+	defer r.locker.RUnlock()
+
 	for i := range r.Instances {
 		if r.Instances[i].Name == name {
 			return r.Instances[i], nil
