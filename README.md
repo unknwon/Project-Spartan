@@ -9,15 +9,14 @@ All prerequisites are for local deployment (i.e. on your Mac) only, cloud deploy
 _Built based on such version, other versions are not tested_
 
 - Go 1.10 
-- Docker for Mac 17.12.0-ce
+- Docker for Mac 18.03.0-ce
+- VirtualBox 5.2.8
 - Vagrant 2.0.3
 - CoreDNS 1.1.1
 
 ## System Overview
 
 ![Network Topology](docs/images/Network%20Topology.jpg)
-
-TODO
 
 ## Disclaimers
 
