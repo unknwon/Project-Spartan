@@ -15,7 +15,7 @@ _Built based on such version, other versions are not tested_
 
 ## System Overview
 
-![Network Topology](docs/images/Network Topology.jpg)
+![Network Topology](docs/images/Network%20Topology.jpg)
 
 TODO
 
