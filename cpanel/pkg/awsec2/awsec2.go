@@ -14,7 +14,7 @@ import (
 // GetInstanceID returns the instance ID by given key name.
 func GetInstanceID(kname string) (string, error) {
 	stdout, err := command.New("aws", "ec2", "describe-instances",
-		"--filter", "Name=key-name,Values=rportal-aws-us-east-1",
+		"--filter", "Name=key-name,Values="+kname,
 		"--query", "Reservations[].Instances[].[InstanceId]",
 		"--output=text").Run()
 	return strings.Fields(stdout)[0], err
@@ -35,7 +35,7 @@ func StartInstance(kname string) error {
 // GetInstancePublicIPv4 returns the public IPv4 address of the instance by given key name.
 func GetInstancePublicIPv4(kname string) (string, error) {
 	stdout, err := command.New("aws", "ec2", "describe-instances",
-		"--filter", "Name=key-name,Values=rportal-aws-us-east-1",
+		"--filter", "Name=key-name,Values="+kname,
 		"--query", "Reservations[].Instances[].[PublicIpAddress]",
 		"--output=text").Run()
 	return strings.Fields(stdout)[0], err
