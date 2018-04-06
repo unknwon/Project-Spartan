@@ -1,0 +1,11 @@
+; ### This is just an example file, please change accordingly ###
+[Unit]
+After=syslog.target
+After=network.target
+
+[Service]
+WorkingDirectory=/home/ec2-user
+ExecStart=/home/ec2-user/rportal -name=rportal-aws-us-east-1 -mysql-host=mysql-aws-us-east-1.ckk6wj9yaeqa.us-east-1.rds.amazonaws.com -mysql-user=user -mysql-password=password
+
+[Install]
+WantedBy=multi-user.target
