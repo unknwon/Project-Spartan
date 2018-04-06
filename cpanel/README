@@ -1,3 +1,12 @@
 To start cpanel instance locally:
 
     make [run]
+
+To develop UI:
+
+    cd ui
+    npm run dev
+
+To build UI:
+
+    npm run build
