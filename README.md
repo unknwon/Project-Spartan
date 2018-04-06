@@ -32,12 +32,12 @@ _Built based on such version, other versions are not tested_
     - Load balance based on response time, CPU load, and memory usage
     - Request health checks to rportal
     - Response health check from cpanel
-- rportal (e.g. `rportal-local-1`, `rportal-docker-1`):
+- rportal (e.g. `rportal-local-1`, `rportal-docker-1`, `rportal-aws-us-east-1`):
     - Serve web pages
     - Response to health checks from haproxy and cpanel
     - Process and store data to MySQL
 - cpanel: Monitor and manipulate other components
-- MySQL (e.g. `mysql-local-1`): Store data
+- MySQL (e.g. `mysql-aws-us-east-1`): Store data
 
 ## Disclaimers
 
