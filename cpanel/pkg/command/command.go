@@ -3,7 +3,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package docker
+package command
 
 import (
 	"bytes"
@@ -19,7 +19,7 @@ var (
 	// Debug enables verbose logging on everything.
 	// This should be false in case Gogs starts in SSH mode.
 	Debug  = true
-	Prefix = "[docker] "
+	Prefix = "[command] "
 )
 
 func log(format string, args ...interface{}) {
@@ -69,10 +69,10 @@ func (c *Command) String() string {
 	return fmt.Sprintf("%s %s", c.name, strings.Join(c.args, " "))
 }
 
-// NewCommand creates and returns a new Git Command based on given command and arguments.
-func NewCommand(args ...string) *Command {
+// New creates and returns a new Command object based on given command and arguments.
+func New(command string, args ...string) *Command {
 	return &Command{
-		name: "docker",
+		name: command,
 		args: args,
 	}
 }
