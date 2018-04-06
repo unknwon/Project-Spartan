@@ -36,7 +36,7 @@
           <td>{{ item.status }}</td>
           <td>
             <a href="#" v-if="item.status == 'running'" @click="shutdownServer(item.name)">Shutdown</a>
-            <a href="#" v-else @click="startServer(item.name)">Start</a>
+            <a href="#" v-else-if="item.status == 'down'" @click="startServer(item.name)">Start</a>
           </td>
         </tr>
       </tbody>
