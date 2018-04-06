@@ -24,7 +24,7 @@ type Reseller struct {
 
 func init() {
 	var err error
-	x, err = gorm.Open("mysql", fmt.Sprintf("root:@tcp(%s:3306)/rportal", *mysqlHost))
+	x, err = gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/rportal", *mysqlUser, *mysqlPassword, *mysqlHost))
 	if err != nil {
 		log.Fatal(2, "Fail to open database connection: %v", err)
 	}

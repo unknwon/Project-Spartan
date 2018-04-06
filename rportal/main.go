@@ -15,9 +15,12 @@ import (
 )
 
 var (
-	port      = flag.Int("port", 8002, "Listening port number for reseller portal")
-	name      = flag.String("name", os.Getenv("SPARTAN-RPORTAL-NAME"), "Code name for reseller portal instance")
-	mysqlHost = flag.String("mysql-host", os.Getenv("SPARTAN-MYSQL-HOST"), "Code name for reseller portal instance")
+	port = flag.Int("port", 8002, "Listening port number for reseller portal")
+	name = flag.String("name", os.Getenv("SPARTAN-RPORTAL-NAME"), "Code name for reseller portal instance")
+
+	mysqlHost     = flag.String("mysql-host", os.Getenv("SPARTAN-MYSQL-HOST"), "Host name of MySQL instance")
+	mysqlUser     = flag.String("mysql-user", "root", "User of MySQL instance")
+	mysqlPassword = flag.String("mysql-password", "", "Password of MySQL instance")
 )
 
 func init() {
