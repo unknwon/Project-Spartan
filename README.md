@@ -16,6 +16,7 @@ _Built based on such version, other versions are not tested_
 
 - Go 1.10 
 - Docker for Mac 18.03.0-ce
+- AWS CLI 1.15.0
 - VirtualBox 5.2.8
 - Vagrant 2.0.3
 - CoreDNS 1.1.1
