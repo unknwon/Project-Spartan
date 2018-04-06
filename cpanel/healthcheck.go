@@ -32,9 +32,10 @@ func init() {
 
 	// Setup database connections
 	for _, in := range databaseRegistry.Instances {
-		x, err := gorm.Open("mysql", fmt.Sprintf("root:@tcp(%s)/rportal", in.Address))
+		sec := setting.Config.Section("database." + in.Name)
+		x, err := gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/rportal", sec.Key("USER"), sec.Key("PASSWORD"), in.Address))
 		if err != nil {
-			log.Fatal(2, "Fail to open database connection: %v", err)
+			log.Fatal(0, "Fail to open database connection: %v", err)
 		}
 		dbCoons[in.Name] = x
 	}
