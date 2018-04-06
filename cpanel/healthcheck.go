@@ -48,9 +48,7 @@ var healthCheckCount int64 = 1
 func sendHealthCheckRequest(in *registry.Instance) bool {
 	resp, err := healthCheckClient.Get("http://" + in.Address + "/healthcheck")
 	if err != nil {
-		if _, ok := err.(net.Error); ok {
-			log.Warn("[HC] Instance '%s' is down", in)
-		} else {
+		if _, ok := err.(net.Error); !ok {
 			log.Error(2, "Fail to perform health check for '%s': %v", in, err)
 		}
 		return false
