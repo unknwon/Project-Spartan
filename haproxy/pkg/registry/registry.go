@@ -68,3 +68,16 @@ func (r *Registry) InstanceByName(name string) (*Instance, error) {
 	}
 	return nil, fmt.Errorf("instance '%s' not found", name)
 }
+
+func (r *Registry) SetInstanceAddress(name, address string) error {
+	in, err := r.InstanceByName(name)
+	if err != nil {
+		return err
+	}
+
+	r.locker.Lock()
+	defer r.locker.Unlock()
+
+	in.Address = address
+	return nil
+}
