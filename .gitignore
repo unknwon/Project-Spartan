@@ -31,4 +31,4 @@ yarn-error.log*
 *.njsproj
 *.sln
 /cpanel/cpanel
-/cpanel/conf/custom.ini
+/cpanel/conf/custom.*

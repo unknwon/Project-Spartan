@@ -12,6 +12,7 @@ import (
 
 	"github.com/Unknwon/Project-Spartan/cpanel/pkg/awsec2"
 	"github.com/Unknwon/Project-Spartan/cpanel/pkg/docker"
+	"github.com/Unknwon/Project-Spartan/cpanel/pkg/gcpvm"
 )
 
 func Home(c *macaron.Context) {
@@ -53,6 +54,17 @@ func StartServer(c *macaron.Context) {
 				time.Sleep(1 * time.Second)
 			}
 		})
+	case strings.Contains(in.Name, "-gcp-"):
+		err = gcpvm.StartInstance(in.Name)
+		if err != nil {
+			break
+		}
+
+		var ip string
+		ip, err = gcpvm.GetInstancePublicIPv4(in.Name)
+		if err == nil {
+			serverRegistry.SetInstanceAddress(in.Name, ip+":8002")
+		}
 
 	default:
 		c.PlainText(422, []byte("Application runs on given infrastructure is not supported"))
@@ -79,6 +91,8 @@ func ShutdownServer(c *macaron.Context) {
 		err = docker.ShutdownContainer(in.Name)
 	case strings.Contains(in.Name, "-aws-"):
 		err = awsec2.ShutdownInstance(in.Name)
+	case strings.Contains(in.Name, "-gcp-"):
+		err = gcpvm.ShutdownInstance(in.Name)
 
 	default:
 		c.PlainText(422, []byte("Application runs on given infrastructure is not supported"))

@@ -1,6 +1,6 @@
 # Project Spartan
 
-The Spartan is a HA (High Availability) research-oriented project for IT 485.
+The Spartan is a hybrid-infrastructure and research-oriented HA (High Availability) project for IT 485.
 
 ## Project Status
 
@@ -17,6 +17,7 @@ _Built based on such version, other versions are not tested_
 - Go 1.10 
 - Docker for Mac 18.03.0-ce
 - AWS CLI 1.15.0
+- Google Cloud SDK 196.0.0
 - VirtualBox 5.2.8
 - Vagrant 2.0.3
 - CoreDNS 1.1.1
@@ -32,7 +33,7 @@ _Built based on such version, other versions are not tested_
     - Load balance based on response time, CPU load, and memory usage
     - Request health checks to rportal
     - Response health check from cpanel
-- rportal (e.g. `rportal-local-1`, `rportal-docker-1`, `rportal-aws-us-east-1`):
+- rportal (e.g. `rportal-local-1`, `rportal-docker-1`, `rportal-aws-us-east-1`, `rportal-gcp-us-east-1`):
     - Serve web pages
     - Response to health checks from haproxy and cpanel
     - Process and store data to MySQL
