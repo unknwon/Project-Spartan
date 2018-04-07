@@ -69,6 +69,7 @@ func (r *Registry) InstanceByName(name string) (*Instance, error) {
 	return nil, fmt.Errorf("instance '%s' not found", name)
 }
 
+// SetInstanceAddress updates address information of the instance by given name.
 func (r *Registry) SetInstanceAddress(name, address string) error {
 	in, err := r.InstanceByName(name)
 	if err != nil {
@@ -80,4 +81,16 @@ func (r *Registry) SetInstanceAddress(name, address string) error {
 
 	in.Address = address
 	return nil
+}
+
+// List returns a list of name/address pairs of instances.
+func (r *Registry) List() []string {
+	r.locker.RLock()
+	defer r.locker.RUnlock()
+
+	list := make([]string, len(r.Instances))
+	for i := range r.Instances {
+		list[i] = r.Instances[i].String()
+	}
+	return list
 }

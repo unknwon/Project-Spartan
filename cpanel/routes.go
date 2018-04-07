@@ -13,6 +13,7 @@ import (
 	"github.com/Unknwon/Project-Spartan/cpanel/pkg/awsec2"
 	"github.com/Unknwon/Project-Spartan/cpanel/pkg/docker"
 	"github.com/Unknwon/Project-Spartan/cpanel/pkg/gcpvm"
+	"github.com/Unknwon/Project-Spartan/cpanel/pkg/setting"
 )
 
 func Home(c *macaron.Context) {
@@ -28,7 +29,6 @@ func Dashboard(c *macaron.Context) {
 }
 
 func StartServer(c *macaron.Context) {
-	// Note: Currently only support application runs on Docker container.
 	in, err := serverRegistry.InstanceByName(c.Query("name"))
 	if err != nil {
 		c.PlainText(422, []byte(err.Error()))
@@ -53,6 +53,10 @@ func StartServer(c *macaron.Context) {
 
 				time.Sleep(1 * time.Second)
 			}
+
+			// Update configuration file
+			setting.Config.Section("server").Key("END_POINTS").SetValue(strings.Join(serverRegistry.List(), ", "))
+			setting.Config.SaveTo(setting.CUSTOM_CONF_PATH)
 		})
 	case strings.Contains(in.Name, "-gcp-"):
 		err = gcpvm.StartInstance(in.Name)
@@ -64,6 +68,10 @@ func StartServer(c *macaron.Context) {
 		ip, err = gcpvm.GetInstancePublicIPv4(in.Name)
 		if err == nil {
 			serverRegistry.SetInstanceAddress(in.Name, ip+":8002")
+
+			// Update configuration file
+			setting.Config.Section("server").Key("END_POINTS").SetValue(strings.Join(serverRegistry.List(), ", "))
+			setting.Config.SaveTo(setting.CUSTOM_CONF_PATH)
 		}
 
 	default:
@@ -79,7 +87,6 @@ func StartServer(c *macaron.Context) {
 }
 
 func ShutdownServer(c *macaron.Context) {
-	// Note: Currently only support application runs on Docker container.
 	in, err := serverRegistry.InstanceByName(c.Query("name"))
 	if err != nil {
 		c.PlainText(422, []byte(err.Error()))

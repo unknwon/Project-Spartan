@@ -12,6 +12,8 @@ import (
 	"gopkg.in/ini.v1"
 )
 
+const CUSTOM_CONF_PATH = "conf/custom.ini"
+
 var (
 	HAProxy struct {
 		EndPoints []string
@@ -34,7 +36,7 @@ func init() {
 	log.New(log.CONSOLE, log.ConsoleConfig{})
 
 	var err error
-	Config, err = ini.Load("conf/app.ini", "conf/custom.ini")
+	Config, err = ini.Load("conf/app.ini", CUSTOM_CONF_PATH)
 	if err != nil {
 		log.Fatal(2, "Fail to load configuration: %v", err)
 	}
