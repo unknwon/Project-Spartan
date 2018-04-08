@@ -1,6 +1,6 @@
 # Project Spartan
 
-The Spartan is a hybrid-infrastructure and research-oriented HA (High Availability) project for IT 485.
+The Project Spartan is a hybrid-infrastructure and research-oriented HA (High Availability) prototype for IT 485.
 
 ## Project Status
 
