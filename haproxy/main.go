@@ -41,14 +41,21 @@ type proxyHandler struct {
 func (h *proxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Spartan-Proxy", *name)
 
-	// Response to health check
-	if r.RequestURI == "/healthcheck" {
+	// Response special requests
+	switch r.URL.Path {
+	case "/healthcheck":
 		w.Header().Add("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(map[string]interface{}{
 			"Status": "OK",
 		}); err != nil {
-			log.Error(4, "Fail to response to health check: %v", err)
+			log.Error(2, "Fail to response to health check: %v", err)
 		}
+		return
+
+	case "/update_address":
+		r.ParseForm()
+		h.Proxy.UpdateAddress(r.Form.Get("name"), r.Form.Get("address"))
+		w.WriteHeader(204)
 		return
 	}
 

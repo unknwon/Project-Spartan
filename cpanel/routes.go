@@ -5,15 +5,18 @@
 package main
 
 import (
+	"net/http"
 	"strings"
 	"time"
 
+	log "gopkg.in/clog.v1"
 	"gopkg.in/macaron.v1"
 
 	"github.com/Unknwon/Project-Spartan/cpanel/pkg/awsec2"
 	"github.com/Unknwon/Project-Spartan/cpanel/pkg/docker"
 	"github.com/Unknwon/Project-Spartan/cpanel/pkg/gcpvm"
 	"github.com/Unknwon/Project-Spartan/cpanel/pkg/setting"
+	"github.com/Unknwon/Project-Spartan/haproxy/pkg/registry"
 )
 
 func Home(c *macaron.Context) {
@@ -26,6 +29,23 @@ func Dashboard(c *macaron.Context) {
 		"servers":   serverRegistry.Instances,
 		"databases": databaseRegistry.Instances,
 	})
+}
+
+func updateProxyConfig(in *registry.Instance) {
+	// Update configuration file
+	setting.Config.Section("server").Key("END_POINTS").SetValue(strings.Join(serverRegistry.List(), ", "))
+	setting.Config.SaveTo(setting.CUSTOM_CONF_PATH)
+
+	c := &http.Client{
+		Timeout: setting.HealthCheck.Timeout,
+	}
+
+	for _, p := range haproxyRegistry.Instances {
+		_, err := c.Get("http://" + p.Address + "/update_address?name=" + in.Name + "&address=" + in.Address)
+		if err != nil {
+			log.Error(2, "Failed to update config of proxy '%s': %v", p.Name, err)
+		}
+	}
 }
 
 func StartServer(c *macaron.Context) {
@@ -54,9 +74,7 @@ func StartServer(c *macaron.Context) {
 				time.Sleep(1 * time.Second)
 			}
 
-			// Update configuration file
-			setting.Config.Section("server").Key("END_POINTS").SetValue(strings.Join(serverRegistry.List(), ", "))
-			setting.Config.SaveTo(setting.CUSTOM_CONF_PATH)
+			updateProxyConfig(in)
 		})
 	case strings.Contains(in.Name, "-gcp-"):
 		err = gcpvm.StartInstance(in.Name)
@@ -68,10 +86,7 @@ func StartServer(c *macaron.Context) {
 		ip, err = gcpvm.GetInstancePublicIPv4(in.Name)
 		if err == nil {
 			serverRegistry.SetInstanceAddress(in.Name, ip+":8002")
-
-			// Update configuration file
-			setting.Config.Section("server").Key("END_POINTS").SetValue(strings.Join(serverRegistry.List(), ", "))
-			setting.Config.SaveTo(setting.CUSTOM_CONF_PATH)
+			updateProxyConfig(in)
 		}
 
 	default:

@@ -10,12 +10,14 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 
 	log "gopkg.in/clog.v1"
 
 	"github.com/Unknwon/Project-Spartan/haproxy/pkg/registry"
+	"github.com/Unknwon/Project-Spartan/haproxy/pkg/setting"
 )
 
 // Proxy is the core part of HA proxy, it maintains the list of server end points
@@ -150,7 +152,7 @@ func (p *Proxy) HealthCheck() {
 
 	// In case no instance is healthy
 	if candidateServer == nil {
-		log.Error(2, "ALERT: All instances are down!!!")
+		log.Warn("ALERT: All instances are down!!!")
 		return
 	}
 
@@ -169,4 +171,22 @@ func (p *Proxy) HealthCheck() {
 	})
 	p.proxyLocker.Unlock()
 	log.Info("[HC] Active server changed to: %s", p.activeServer)
+}
+
+// UpdateAddress updates the address with given information.
+func (p *Proxy) UpdateAddress(name, address string) {
+	p.proxyLocker.Lock()
+	defer p.proxyLocker.Unlock()
+
+	in, err := p.registry.InstanceByName(name)
+	if err != nil {
+		log.Error(2, "InstanceByName [name: %s]: %v", name, err)
+		return
+	}
+
+	in.Address = address
+
+	// Update configuration file
+	setting.Config.Section("server").Key("END_POINTS").SetValue(strings.Join(p.registry.List(), ", "))
+	setting.Config.SaveTo(setting.CUSTOM_CONF_PATH)
 }
