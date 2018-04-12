@@ -6,8 +6,6 @@ The Project Spartan is a hybrid-infrastructure and research-oriented HA (High Av
 
 The goal of this project is more like PoC (Proof of Concept) rather than comprehensive implementation.
 
-**This project is not finished with its roadmap, if you're interested in details, DM me (`jc.#0001`) on Discord.**
-
 ## Prerequisites
 
 All prerequisites are for local deployment (i.e. on your Mac) only, cloud deployment is much easier that only needs compiled binaries of all components (i.e. haproxy, rportal, and cpanel).
