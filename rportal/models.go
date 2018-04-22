@@ -13,6 +13,7 @@ import (
 )
 
 var x *gorm.DB
+var xs *gorm.DB
 
 type Reseller struct {
 	ID      int64  `json:"id"`
@@ -29,8 +30,24 @@ func init() {
 		log.Fatal(2, "Fail to open database connection: %v", err)
 	}
 
+	xs, err = gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/rportal", *mysqlUser, *mysqlPassword, *mysqlSlaveHost))
+	if err != nil {
+		log.Fatal(2, "Fail to open slave database connection: %v", err)
+	}
+
 	if x.Set("gorm:table_options", "ENGINE=InnoDB").
 		AutoMigrate(&Reseller{}).Error != nil {
 		log.Fatal(2, "Fail to auto migrate database tables: %v", err)
 	}
+}
+
+// getDB returns slave DB object when master fails.
+func getDB() *gorm.DB {
+	e := x
+	x.HasTable("resellers")
+	if err := x.DB().Ping(); err != nil {
+		log.Warn("Master database is currently unavailable: %v", err)
+		e = xs
+	}
+	return e
 }

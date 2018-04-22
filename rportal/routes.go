@@ -50,8 +50,9 @@ func Home(c *macaron.Context) {
 }
 
 func ListItems(c *macaron.Context) {
+	db := getDB()
 	items := make([]*Reseller, 0, 5)
-	if err := x.Find(&items).Error; err != nil {
+	if err := db.Find(&items).Error; err != nil {
 		log.Error(2, "Fail to read items: %v", err)
 		c.Status(500)
 		return
@@ -61,6 +62,7 @@ func ListItems(c *macaron.Context) {
 }
 
 func AddItem(c *macaron.Context) {
+	db := getDB()
 	r := &Reseller{}
 	data, err := c.Req.Body().Bytes()
 	if err != nil {
@@ -73,7 +75,7 @@ func AddItem(c *macaron.Context) {
 		c.Status(500)
 		return
 	}
-	if err := x.Create(r).Error; err != nil {
+	if err := db.Create(r).Error; err != nil {
 		log.Error(2, "Fail to add item: %v", err)
 		c.Status(500)
 		return
@@ -83,7 +85,8 @@ func AddItem(c *macaron.Context) {
 }
 
 func DeleteItem(c *macaron.Context) {
-	if err := x.Delete(new(Reseller), "id = ?", c.ParamsInt64("id")).Error; err != nil {
+	db := getDB()
+	if err := db.Delete(new(Reseller), "id = ?", c.ParamsInt64("id")).Error; err != nil {
 		log.Error(2, "Fail to delete item: %v", err)
 		c.Status(500)
 		return
