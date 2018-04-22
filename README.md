@@ -19,6 +19,7 @@ _Built based on such version, other versions are not tested_
 - VirtualBox 5.2.8
 - Vagrant 2.0.3
 - CoreDNS 1.1.1
+- MySQL 5.7.22
 
 ## System Overview
 
